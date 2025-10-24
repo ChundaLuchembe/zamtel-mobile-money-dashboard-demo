@@ -972,7 +972,7 @@ def update_all(start_date, end_date, province, district, txn_type, status, chann
                                      title="TRANSACTION AMOUNTS OVER TIME")
                     fig_time.update_layout(
                         height=400,
-                        title_font=dict(size=16, color="#2c3e50", family="Arial, sans-serif", weight="bold"),
+                        title_font=dict(size=16, color="#2c3e50", family="Arial Black, Arial, sans-serif"),
                         title_x=0.5,
                         title_xanchor="center"
                     )
@@ -983,7 +983,7 @@ def update_all(start_date, end_date, province, district, txn_type, status, chann
                     fig_hourly = px.bar(hourly, x="Hour", y="Count", title="TRANSACTIONS BY HOUR")
                     fig_hourly.update_layout(
                         height=400,
-                        title_font=dict(size=16, color="#2c3e50", family="Arial, sans-serif", weight="bold"),
+                        title_font=dict(size=16, color="#2c3e50", family="Arial Black, Arial, sans-serif"),
                         title_x=0.5,
                         title_xanchor="center"
                     )
@@ -995,7 +995,7 @@ def update_all(start_date, end_date, province, district, txn_type, status, chann
                                     title="TRANSACTION TYPES")
                     fig_type.update_layout(
                         height=400,
-                        title_font=dict(size=16, color="#2c3e50", family="Arial, sans-serif", weight="bold"),
+                        title_font=dict(size=16, color="#2c3e50", family="Arial Black, Arial, sans-serif"),
                         title_x=0.5,
                         title_xanchor="center"
                     )
@@ -1007,7 +1007,7 @@ def update_all(start_date, end_date, province, district, txn_type, status, chann
                                               title="STATUS BY CHANNEL")
                     fig_status_channel.update_layout(
                         height=400,
-                        title_font=dict(size=16, color="#2c3e50", family="Arial, sans-serif", weight="bold"),
+                        title_font=dict(size=16, color="#2c3e50", family="Arial Black, Arial, sans-serif"),
                         title_x=0.5,
                         title_xanchor="center"
                     )
@@ -1018,7 +1018,7 @@ def update_all(start_date, end_date, province, district, txn_type, status, chann
                     fig_prov = px.bar(prov_perf, x="Province", y="Amount", title="VALUE BY PROVINCE")
                     fig_prov.update_layout(
                         height=400,
-                        title_font=dict(size=16, color="#2c3e50", family="Arial, sans-serif", weight="bold"),
+                        title_font=dict(size=16, color="#2c3e50", family="Arial Black, Arial, sans-serif"),
                         title_x=0.5,
                         title_xanchor="center"
                     )
@@ -1029,7 +1029,7 @@ def update_all(start_date, end_date, province, district, txn_type, status, chann
                     fig_dist = px.bar(dist_perf, x="District", y="Amount", title="VALUE BY DISTRICT")
                     fig_dist.update_layout(
                         height=400,
-                        title_font=dict(size=16, color="#2c3e50", family="Arial, sans-serif", weight="bold"),
+                        title_font=dict(size=16, color="#2c3e50", family="Arial Black, Arial, sans-serif"),
                         title_x=0.5,
                         title_xanchor="center"
                     )
@@ -1040,7 +1040,7 @@ def update_all(start_date, end_date, province, district, txn_type, status, chann
                     fig_agents_value = px.bar(agents_value, x="AgentID", y="Amount", title="TOP AGENTS BY VALUE")
                     fig_agents_value.update_layout(
                         height=400,
-                        title_font=dict(size=16, color="#2c3e50", family="Arial, sans-serif", weight="bold"),
+                        title_font=dict(size=16, color="#2c3e50", family="Arial Black, Arial, sans-serif"),
                         title_x=0.5,
                         title_xanchor="center"
                     )
@@ -1049,7 +1049,7 @@ def update_all(start_date, end_date, province, district, txn_type, status, chann
                     fig_agents_volume = px.bar(agents_volume, x="AgentID", y="Count", title="TOP AGENTS BY VOLUME")
                     fig_agents_volume.update_layout(
                         height=400,
-                        title_font=dict(size=16, color="#2c3e50", family="Arial, sans-serif", weight="bold"),
+                        title_font=dict(size=16, color="#2c3e50", family="Arial Black, Arial, sans-serif"),
                         title_x=0.5,
                         title_xanchor="center"
                     )
