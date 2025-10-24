@@ -1,0 +1,117 @@
+/* KPI Card Hover Effects */
+.kpi-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.kpi-card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Body Background */
+body {
+    background-color: #f5f7fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Chart Container Styling */
+.js-plotly-plot {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Loading State */
+._dash-loading {
+    opacity: 0.5;
+}
+
+/* Table Styling Improvements */
+.dash-table-container {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Dropdown Styling */
+.Select-control {
+    border-radius: 6px !important;
+}
+
+/* Date Picker Styling */
+.DateInput_input {
+    border-radius: 6px !important;
+}
+
+/* Login Button Hover Effect */
+#login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4) !important;
+}
+
+/* Login Input Focus */
+#username-input:focus,
+#password-input:focus {
+    outline: none;
+    border-color: #28a745 !important;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+/* Login Error Animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+#login-error:not(:empty) {
+    animation: shake 0.5s;
+}
+
+/* User Menu Button Hover */
+#user-menu-button:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    transform: translateY(-2px);
+}
+
+/* Logout Button Hover */
+#logout-button:hover {
+    background: #c82333 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* Close Sidebar Button Hover */
+#close-sidebar:hover {
+    color: #dc3545 !important;
+    transform: scale(1.2);
+}
+
+/* Sidebar Backdrop */
+.sidebar-open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+}
