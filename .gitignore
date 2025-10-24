@@ -9,4 +9,5 @@ venv/
 .DS_Store
 *.bat
 TROUBLESHOOTING.md
+LOGIN_INFO.md
 simple_app.py
