@@ -43,4 +43,4 @@ The dashboard uses `zamtel_mobile_money_200.csv` containing 200 sample transacti
 
 ## Author
 
-Zamtel Analytics Team
+CHUNDA LUCHEMBE AKA SPL_DEV
