@@ -69,9 +69,23 @@ print("="*60 + "\n")
 # -----------------------
 # App init
 # -----------------------
-app = dash.Dash(__name__, suppress_callback_exceptions=True)
-app.title = "Zamtel Mobile Money Analytics"
-server = app.server  # for deployment
+try:
+    app = dash.Dash(__name__, suppress_callback_exceptions=True)
+    app.title = "Zamtel Mobile Money Analytics"
+    server = app.server  # for deployment - Flask server instance
+    print("✅ Dash app initialized successfully")
+    print(f"✅ Server object created: {type(server).__name__}")
+except Exception as e:
+    print(f"❌ Error initializing Dash app: {e}")
+    import traceback
+    traceback.print_exc()
+    # Create a minimal Flask app as fallback
+    from flask import Flask
+    server = Flask(__name__)
+    @server.route('/')
+    def index():
+        return f"Error loading dashboard: {str(e)}"
+    raise
 
 # -----------------------
 # Controls
