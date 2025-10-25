@@ -4,12 +4,12 @@ A professional analytics dashboard for Zamtel Mobile Money transactions built wi
 
 ## Features
 
-- 📊 Real-time KPI tracking (Total Transactions, Total Value, Average Value, Success Rate)
-- 📈 Interactive charts and visualizations
-- 🔍 Advanced filtering (Date, Province, District, Transaction Type, Status, Channel)
-- 🔄 Auto-refresh functionality
-- 📱 Responsive design
-- 💼 Professional UI with modern styling
+-  Real-time KPI tracking (Total Transactions, Total Value, Average Value, Success Rate)
+-  Interactive charts and visualizations
+- Advanced filtering (Date, Province, District, Transaction Type, Status, Channel)
+- Auto-refresh functionality
+-  Responsive design
+-  Professional UI with modern styling
 
 ## Tech Stack
 
