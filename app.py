@@ -4,6 +4,19 @@ import numpy as np
 from datetime import datetime, time
 import warnings
 import hashlib
+import io
+
+# PDF generation imports
+try:
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet
+    from reportlab.lib.units import inch
+    REPORTLAB_AVAILABLE = True
+except ImportError:
+    REPORTLAB_AVAILABLE = False
+    print("⚠️ reportlab not installed - PDF export will be limited")
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
@@ -736,15 +749,169 @@ def get_dashboard():
         ], className="six columns", style={"padding": "8px"}),
     ], style={"display": "flex", "gap": "8px", "flexWrap": "wrap"}),
 
-    html.H3("Transaction table"),
-    dash_table.DataTable(
-        id="txn-table",
-        columns=[{"name": c, "id": c} for c in df.columns if c != "SuccessFlag"],
-        page_size=10,
-        sort_action="native",
-        filter_action="native",
-        style_table={"overflowX": "auto"},
-    ),
+    html.Div([
+        # Table Header Section
+        html.Div([
+            # Left side - Title and description
+            html.Div([
+                html.H3([
+                    html.I(className="fas fa-table", style={"marginRight": "12px", "color": "#28a745"}),
+                    "TRANSACTION DATA TABLE"
+                ], style={
+                    "margin": "0",
+                    "color": "#2c3e50",
+                    "fontSize": "24px",
+                    "fontWeight": "700",
+                    "textTransform": "uppercase",
+                    "letterSpacing": "1px",
+                    "marginBottom": "8px"
+                }),
+                html.P("View, search, and export transaction records", style={
+                    "margin": "0",
+                    "color": "#6c757d",
+                    "fontSize": "14px"
+                })
+            ], style={"flex": "1"}),
+            
+            # Right side - Export buttons
+            html.Div([
+                html.Button([
+                    html.I(className="fas fa-file-csv", style={"marginRight": "8px"}),
+                    "CSV"
+                ], id="export-csv", n_clicks=0, style={
+                    "padding": "10px 20px",
+                    "background": "#28a745",
+                    "color": "white",
+                    "border": "none",
+                    "borderRadius": "6px",
+                    "fontSize": "14px",
+                    "fontWeight": "600",
+                    "cursor": "pointer",
+                    "marginRight": "10px",
+                    "transition": "all 0.3s ease"
+                }),
+                html.Button([
+                    html.I(className="fas fa-file-excel", style={"marginRight": "8px"}),
+                    "Excel"
+                ], id="export-excel", n_clicks=0, style={
+                    "padding": "10px 20px",
+                    "background": "#20c997",
+                    "color": "white",
+                    "border": "none",
+                    "borderRadius": "6px",
+                    "fontSize": "14px",
+                    "fontWeight": "600",
+                    "cursor": "pointer",
+                    "marginRight": "10px",
+                    "transition": "all 0.3s ease"
+                }),
+                html.Button([
+                    html.I(className="fas fa-file-pdf", style={"marginRight": "8px"}),
+                    "PDF"
+                ], id="export-pdf", n_clicks=0, style={
+                    "padding": "10px 20px",
+                    "background": "#667eea",
+                    "color": "white",
+                    "border": "none",
+                    "borderRadius": "6px",
+                    "fontSize": "14px",
+                    "fontWeight": "600",
+                    "cursor": "pointer",
+                    "transition": "all 0.3s ease"
+                }),
+                dcc.Download(id="download-dataframe")
+            ], style={
+                "display": "flex",
+                "alignItems": "center"
+            })
+        ], style={
+            "display": "flex",
+            "justifyContent": "space-between",
+            "alignItems": "center",
+            "padding": "20px 30px",
+            "background": "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+            "borderRadius": "12px 12px 0 0",
+            "borderBottom": "3px solid #28a745",
+            "marginBottom": "0"
+        }),
+        
+        # Download feedback message
+        html.Div(id="download-feedback", style={
+            "position": "fixed",
+            "top": "20px",
+            "right": "20px",
+            "padding": "15px 25px",
+            "background": "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
+            "color": "white",
+            "borderRadius": "8px",
+            "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
+            "fontSize": "14px",
+            "fontWeight": "600",
+            "zIndex": "9999",
+            "display": "none",
+            "alignItems": "center",
+            "gap": "10px",
+            "animation": "slideIn 0.3s ease"
+        }),
+        
+        # Timer to auto-hide feedback message
+        dcc.Interval(id="feedback-timer", interval=3000, n_intervals=0, disabled=True),
+        
+        # DataTable
+        dash_table.DataTable(
+            id="txn-table",
+            columns=[{"name": c, "id": c} for c in df.columns if c != "SuccessFlag"],
+            page_size=10,
+            sort_action="native",
+            filter_action="native",
+            style_table={
+                "overflowX": "auto",
+                "borderRadius": "0 0 12px 12px",
+                "boxShadow": "0 4px 6px rgba(0,0,0,0.1)"
+            },
+            style_header={
+                "backgroundColor": "#28a745",
+                "color": "white",
+                "fontWeight": "bold",
+                "textAlign": "center",
+                "padding": "12px",
+                "fontSize": "14px",
+                "textTransform": "uppercase",
+                "letterSpacing": "0.5px"
+            },
+            style_data={
+                "backgroundColor": "white",
+                "color": "#2c3e50",
+                "fontSize": "13px",
+                "padding": "10px"
+            },
+            style_data_conditional=[
+                {
+                    "if": {"row_index": "odd"},
+                    "backgroundColor": "#f8f9fa"
+                },
+                {
+                    "if": {"state": "selected"},
+                    "backgroundColor": "#d4edda",
+                    "border": "1px solid #28a745"
+                }
+            ],
+            style_cell={
+                "textAlign": "left",
+                "padding": "10px",
+                "minWidth": "120px",
+                "maxWidth": "180px",
+                "whiteSpace": "normal",
+                "height": "auto"
+            },
+            style_filter={
+                "backgroundColor": "#e9ecef"
+            }
+        ),
+    ], style={
+        "marginTop": "30px",
+        "marginBottom": "30px"
+    }),
     
     # Hidden div to trigger initial load
     html.Div(id="initial-load", style={"display": "none"})
@@ -1101,6 +1268,252 @@ def update_all(start_date, end_date, province, district, txn_type, status, chann
             {"data": [], "layout": {"title": "NO DATA AVAILABLE"}},
             []
         )
+
+# Download callback for exporting table data
+@app.callback(
+    [Output("download-dataframe", "data"),
+     Output("download-feedback", "children"),
+     Output("download-feedback", "style"),
+     Output("feedback-timer", "disabled")],
+    [Input("export-csv", "n_clicks"),
+     Input("export-excel", "n_clicks"),
+     Input("export-pdf", "n_clicks")],
+    [State("txn-table", "data")],
+    prevent_initial_call=True
+)
+def download_data(csv_clicks, excel_clicks, pdf_clicks, table_data):
+    """Handle data export in CSV, Excel, or PDF format"""
+    
+    ctx = dash.callback_context
+    if not ctx.triggered or not table_data:
+        return None, "", {"display": "none"}, True
+    
+    button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    
+    # Convert table data to DataFrame
+    export_df = pd.DataFrame(table_data)
+    
+    # Generate filename with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    # Feedback message style
+    feedback_style = {
+        "position": "fixed",
+        "top": "20px",
+        "right": "20px",
+        "padding": "15px 25px",
+        "background": "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
+        "color": "white",
+        "borderRadius": "8px",
+        "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "zIndex": "9999",
+        "display": "flex",
+        "alignItems": "center",
+        "gap": "10px"
+    }
+    
+    if button_id == "export-csv":
+        # Export as CSV
+        print("📥 Exporting as CSV...")
+        feedback_msg = [
+            html.I(className="fas fa-download", style={"fontSize": "18px"}),
+            "Downloading CSV file..."
+        ]
+        return (
+            dcc.send_data_frame(
+                export_df.to_csv, 
+                f"zamtel_transactions_{timestamp}.csv",
+                index=False
+            ),
+            feedback_msg,
+            feedback_style,
+            False  # Enable timer
+        )
+    
+    elif button_id == "export-excel":
+        # Export as Excel with formatting
+        print("📊 Exporting as Excel...")
+        
+        # Create a BytesIO buffer
+        buffer = io.BytesIO()
+        
+        # Write to Excel with pandas
+        with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+            export_df.to_excel(
+                writer, 
+                sheet_name='Transactions',
+                index=False
+            )
+            
+            # Get the worksheet
+            worksheet = writer.sheets['Transactions']
+            
+            # Format header row
+            for cell in worksheet[1]:
+                cell.font = cell.font.copy(bold=True)
+                cell.fill = cell.fill.copy(fgColor="28a745")
+        
+        buffer.seek(0)
+        feedback_msg = [
+            html.I(className="fas fa-download", style={"fontSize": "18px"}),
+            "Downloading Excel file..."
+        ]
+        return (
+            dcc.send_bytes(
+                buffer.getvalue(),
+                f"zamtel_transactions_{timestamp}.xlsx"
+            ),
+            feedback_msg,
+            feedback_style,
+            False  # Enable timer
+        )
+    
+    elif button_id == "export-pdf":
+        # Export as PDF
+        print("📄 Exporting as PDF...")
+        
+        # Check if reportlab is available
+        if not REPORTLAB_AVAILABLE:
+            print("⚠️ reportlab not available - exporting as CSV instead")
+            feedback_msg = [
+                html.I(className="fas fa-exclamation-triangle", style={"fontSize": "18px"}),
+                "PDF not available - downloading as CSV..."
+            ]
+            feedback_style["background"] = "linear-gradient(135deg, #ffc107 0%, #ff9800 100%)"
+            return (
+                dcc.send_data_frame(
+                    export_df.to_csv, 
+                    f"zamtel_transactions_{timestamp}.csv",
+                    index=False
+                ),
+                feedback_msg,
+                feedback_style,
+                False  # Enable timer
+            )
+        
+        buffer = io.BytesIO()
+        
+        # Create PDF document (landscape for more columns)
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=landscape(A4),
+            rightMargin=30,
+            leftMargin=30,
+            topMargin=30,
+            bottomMargin=18,
+        )
+        
+        # Container for PDF elements
+        elements = []
+        
+        # Styles
+        styles = getSampleStyleSheet()
+        
+        # Title
+        title = Paragraph(
+            "<b>ZAMTEL MOBILE MONEY - TRANSACTION REPORT</b>",
+            styles['Title']
+        )
+        elements.append(title)
+        elements.append(Spacer(1, 12))
+        
+        # Subtitle with timestamp
+        subtitle = Paragraph(
+            f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}<br/>"
+            f"Total Records: {len(export_df)}",
+            styles['Normal']
+        )
+        elements.append(subtitle)
+        elements.append(Spacer(1, 12))
+        
+        # Prepare table data
+        # Limit columns to fit on page
+        key_columns = ['TransactionID', 'Date', 'Time', 'Province', 'District', 
+                      'TransactionType', 'Amount', 'Status']
+        
+        # Filter to key columns that exist
+        available_columns = [col for col in key_columns if col in export_df.columns]
+        pdf_df = export_df[available_columns]
+        
+        # Create table data (header + rows)
+        table_data_list = [available_columns]  # Header
+        
+        # Add rows (limit to first 50 for PDF readability)
+        for _, row in pdf_df.head(50).iterrows():
+            table_data_list.append([str(row[col]) for col in available_columns])
+        
+        # Create table
+        pdf_table = Table(table_data_list)
+        
+        # Style the table
+        pdf_table.setStyle(TableStyle([
+            # Header styling
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#28a745')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            
+            # Data rows styling
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 1), (-1, -1), 8),
+            ('ALIGN', (0, 1), (-1, -1), 'LEFT'),
+            
+            # Grid
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            
+            # Alternating row colors
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.lightgrey]),
+        ]))
+        
+        elements.append(pdf_table)
+        
+        # Add note if data was truncated
+        if len(export_df) > 50:
+            elements.append(Spacer(1, 12))
+            note = Paragraph(
+                f"<i>Note: Showing first 50 of {len(export_df)} transactions. "
+                f"For complete data, please use CSV or Excel export.</i>",
+                styles['Normal']
+            )
+            elements.append(note)
+        
+        # Build PDF
+        doc.build(elements)
+        
+        buffer.seek(0)
+        feedback_msg = [
+            html.I(className="fas fa-download", style={"fontSize": "18px"}),
+            "Downloading PDF file..."
+        ]
+        return (
+            dcc.send_bytes(
+                buffer.getvalue(),
+                f"zamtel_transactions_{timestamp}.pdf"
+            ),
+            feedback_msg,
+            feedback_style,
+            False  # Enable timer
+        )
+    
+    return None, "", {"display": "none"}, True
+
+
+# Auto-hide feedback message after 3 seconds
+@app.callback(
+    [Output("download-feedback", "style", allow_duplicate=True),
+     Output("feedback-timer", "disabled", allow_duplicate=True)],
+    Input("feedback-timer", "n_intervals"),
+    prevent_initial_call=True
+)
+def hide_feedback(n):
+    """Hide the download feedback message after timer expires"""
+    return {"display": "none"}, True  # Hide message and disable timer
 
 
 if __name__ == "__main__":
