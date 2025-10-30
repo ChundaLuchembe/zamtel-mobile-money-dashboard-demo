@@ -31,7 +31,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-3. Open browser to: http://localhost:8050
+3. Open browser to:(https://zamtel-mobile-money-dashboard-demo-3.onrender.com/)
 
 ## Deployment
 
